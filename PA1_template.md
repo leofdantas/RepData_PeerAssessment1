@@ -6,16 +6,18 @@ output:
     keep_md: true
 ---
 
+
 Libraries needed
 
 ```r
+library(readr)
 library(dplyr)
 library(timeDate)
 library(ggplot2)
 ```
 
 ### Loading and preprocessing the data
-Read the csv file and remove rows that do not have data for the steps taken on a given day
+To start the analysis, I first read the csv file and remove the rows that do not contain data for the number of steps taken on a given time interval
 
 ```r
 activity <- read.csv("activity.csv")
@@ -52,7 +54,6 @@ median(steps_daily$steps)
 To better illustrate the distribution of the steps in different days, I create a histogram.
 
 ```r
-# Plot
 ggplot(steps_daily, aes(x = steps)) +
   geom_histogram(fill = "green3", color = "black", binwidth = 400) +
   xlab("Total steps per day") +
@@ -61,11 +62,10 @@ ggplot(steps_daily, aes(x = steps)) +
   theme_minimal()
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 ### What is the average daily activity pattern?
-
-In order to track the daily activity pattern, I find the average number of steps per 5-minute interval and plot both variables
+In order to track the daily activity pattern, I first find the average number of steps per 5-minute interval across the time period and then plot both variables: steps and intervals.
 
 ```r
 # Get the average steps taken per 5-minute interval
@@ -82,9 +82,9 @@ ggplot(steps_int_avg, aes(interval, steps)) +
   theme_minimal()
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
-To figure out which 5-minute interval, on average, contains the greatest number of steps, I can use the same aggregated dataset---steps_int_avg---and ask for the equivalent interval for the highest value in the steps.
+To figure out which 5-minute interval, on average, contains the greatest number of steps, I can use the previous aggregated dataset---steps_int_avg---and ask for the highest value in the steps and its equivalent interval value.
 
 ```r
 # Get the row with the highest value for steps
@@ -98,7 +98,7 @@ as.character(steps_int_avg[max_steps,1])
 ```
 
 ### Imputing missing values
-To estimate the number of NAs in the original dataset, we can just check if all elements are NA and sum the TRUE values.
+To estimate the number of NAs in the original dataset, we can just check if all elements are NA---which creates a logical vector the size of the dataframe---and sum the TRUE values.
 
 ```r
 activity <- read.csv("activity.csv")
@@ -109,7 +109,7 @@ sum(is.na(activity$steps))
 ## [1] 2304
 ```
 
-To estipulate a value to substitute these NAs, I use the previous calculation of the average number of steps per 5-minute interval, filling the NAs entries accordingly. More specifically, I loop over the dataset and, if the observation is an NA, fill that with the average number of steps of its respective 5-minute interval. Given the size of the original dataset, I subset the NAs to execute the for loop and then merge the filled data with the original dataset.
+To produce a value to substitute these NAs observations, I use the previous calculation of the average number of steps per 5-minute interval, filling the NAs entries accordingly. More specifically, I loop over the dataset and, if an observation is NA, fill that entry with the average number of steps of its respective 5-minute interval. Given the size of the original dataset, I subset the NAs to execute the for loop and then merge the filled data with the original dataset.
 
 
 ```r
@@ -128,7 +128,7 @@ for (i in 1:nrow(activity_NA)) {
 filled_activity <- rbind(filled_activity_NA, activity)
 ```
 
-Now, the dataframe filled_activity mirrors the original activity, but all of the NA observations have been filled. In order to see the difference between the two, we can calculate their mean and median
+Now, the dataframe filled_activity mirrors the original activity dataset, but all of the NA observations have been filled. In order to see the difference between the two, we can calculate their mean and median.
 
 ```r
 # Summarize by date
@@ -171,7 +171,7 @@ median(steps_daily_filled$steps)
 ## [1] 10766.19
 ```
 
-As expected, filling the NAs with the average values of the rest of the dataset did not affect the mean and median of the entire data. However, this does not mean that filled_NAs have no effect on summary statistics, as exemplified below:
+As expected, filling the NAs with the average values of the rest of the dataset did not affect the mean and median of the entire data. However, this does not mean that filled_NAs have no effect on other summary statistics, such as the total sum, as exemplified below:
 
 ```r
 # Total number of steps before NA-fill
@@ -223,5 +223,5 @@ ggplot(steps_week_int_avg, aes(interval, steps)) +
   theme_minimal()
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
