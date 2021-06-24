@@ -122,8 +122,20 @@ sum(steps_daily$steps)
 # Total number of steps after NA-fill
 sum(steps_daily_filled$steps)
 ```
-
 Because I manually changed the observations, now the data indicates the subjects walked much more than they actually did. In other words, by inputting data, I implied that the subject walked during days that, in reality, they did not---at least not according to the original data collection. 
+
+To picture how this difference affects the analysis, I create a histogram of the total number of steps per day with the filled-dataset. The summarizing and plotting code is exactly the same as the previous histogram with the unaltered data, but I use the object steps_daily_filled instead of just steps_daily.
+```{r}
+ggplot(steps_daily_filled, aes(x = steps)) +
+  geom_histogram(fill = "green3", color = "black", binwidth = 400) +
+  xlab("Total steps per day") +
+  ylab("Frequency") +
+  ggtitle("Distribution of Total Number of Steps per Day") +
+  theme_minimal()
+```
+Because I used the averages of the original data to fill in the NAs, the shape and form of the histogram is exactly the same. However, because we added data, the y-axis now depicts greater values. This means that a frequency of a range of steps taken on a given interval was higher than before.
+
+In conclusion, although filling the NAs did not affect the mean and median of the data nor altered the distribution of the histogram, it can still lead to misleading numbers depending on what you analyze.
 
 ### Are there differences in activity patterns between weekdays and weekends?
 
